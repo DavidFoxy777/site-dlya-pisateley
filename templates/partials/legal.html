@@ -1,0 +1,53 @@
+{# ============================================================
+   ЮРИДИЧЕСКИЕ СТРАНИЦЫ — политика и оферта.
+   Текст лежит в content.json → legal. Чтобы поменять формулировку,
+   править нужно только JSON, а не этот шаблон.
+   Файл data = content.json, поле doc = legal.privacy или legal.offer
+   ============================================================ #}
+{% extends "base.html" %}
+{% import "partials/macros.html" as m %}
+
+{% block title %}{{ doc.title }} — {{ site.brand }}{% endblock %}
+{% block description %}{{ doc.title }} сайта «{{ site.brand }}».{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <nav class="crumbs" aria-label="Хлебные крошки">
+      <a href="{{ url_for('index') }}">Главная</a><span>/</span><span>{{ doc.title }}</span>
+    </nav>
+    <h1 class="h-2">{{ doc.title }}</h1>
+    <p class="lead mt-2">{{ doc.lead }}</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container" style="max-width:820px">
+    {{ m.notice('Не забудьте заполнить:', doc.notice) }}
+
+    <div class="card reveal" style="padding:clamp(24px,3.4vw,44px)">
+      <ol class="doc">
+        {% for c in doc.clauses %}
+          <li>
+            <h3>{{ c.split(' ')[0] if c.split(' ')[0].rstrip('.').isdigit() else c[:60] + '…' }}</h3>
+            <p>{{ c }}</p>
+          </li>
+        {% endfor %}
+      </ol>
+
+      <div class="notice mt-3">
+        <span class="ni">⚑</span>
+        <div><b>Реквизиты документа.</b> Наименование — {{ contact_text('legal') }},
+          ИНН {{ contact_text('inn') }}, ОГРН {{ contact_text('ogrn') }},
+          адрес {{ contact_text('address') }}. Эти поля подставляются из
+          <b>content.json</b> → <b>contacts</b>.</div>
+      </div>
+    </div>
+
+    <div class="flex mt-3">
+      <a href="{{ url_for('index') }}" class="btn btn--ghost">На главную</a>
+      <a href="{{ url_for('contacts') }}" class="btn btn--dark">Задать вопрос</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

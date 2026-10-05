@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% import "partials/macros.html" as m %}
+{% set a = data.about %}
+
+{% block title %}Преподаватель — {{ site.brand }}{% endblock %}
+{% block description %}{{ site.creator }} — автор и ведущий курса «{{ site.brand }}». Подход, факты, условия сотрудничества.{% endblock %}
+
+{% block content %}
+
+{# ============ КТО Я ============ #}
+<section class="section" style="padding-top:clamp(30px,5vw,64px)">
+  <div class="container">
+    <nav class="crumbs" aria-label="Хлебные крошки">
+      <a href="{{ url_for('index') }}">Главная</a><span>/</span><span>Преподаватель</span>
+    </nav>
+
+    <div class="grid" style="grid-template-columns:auto 1fr;gap:clamp(30px,5vw,66px);margin-top:clamp(24px,4vw,48px)">
+      <div class="reveal">
+        <div class="person__photo" style="width:clamp(200px,26vw,320px)">место<br>для фото</div>
+        <p class="mono mt-2" style="line-height:1.6">ФОТО ПРЕПОДАВАТЕЛЯ<br>ЗАГРУЗИТЕ В assets/img/</p>
+      </div>
+
+      <div class="reveal">
+        <span class="badge badge--accent">{{ a.hero.kicker }}</span>
+        <h1 class="h-1 mt-2">{{ a.hero.title_html | safe }}</h1>
+        <div class="person__bio mt-3">{{ a.bio_html | safe }}</div>
+
+        {% if a.facts %}
+          <div class="stats mt-3" style="grid-template-columns:repeat(2,1fr)">
+            {% for f in a.facts %}
+              <div class="stat"><b data-count="{{ f.value }}">0</b><span>{{ f.label }}</span></div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ============ ПОДХОД ============ #}
+{% if a.rules %}
+<section class="section section--alt">
+  <div class="container">
+    {{ m.head('Подход', 'Три правила,<br>на которых всё держится', '') }}
+    <div class="grid grid-3">
+      {% for r in a.rules %}
+        <article class="card card--gain reveal">
+          <div class="card__num">{{ r.num }}</div>
+          <h3 class="h-3 mt-2">{{ r.title }}</h3>
+          <p>{{ r.text }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ============ ФАКТЫ И ЧЕСТНОСТЬ ============ #}
+<section class="section">
+  <div class="container">
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,54px)">
+      <div class="reveal">
+        <span class="mono">{{ a.creds.kicker }}</span>
+        <h2 class="h-2 mt-2">{{ a.creds.title }}</h2>
+        <ul class="creds mt-3">
+          {% for c in a.creds['items'] %}<li>{{ c | safe }}</li>{% endfor %}
+        </ul>
+      </div>
+
+      <div class="reveal">
+        <span class="mono">{{ a.honest.kicker }}</span>
+        <h2 class="h-2 mt-2">{{ a.honest.title }}</h2>
+        <ul class="card__list mt-3">
+          {% for i in a.honest['items'] %}<li>{{ i }}</li>{% endfor %}
+        </ul>
+        {{ m.notice('Что обещаю:', a.honest.promise) }}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ============ СОТРУДНИЧЕСТВО ============ #}
+{% if a.partner %}
+<section class="section section--alt">
+  <div class="container">
+    {{ m.head(a.partner.kicker, a.partner.title, a.partner.lead) }}
+    <div class="grid grid-3">
+      {% for p in a.partner['items'] %}
+        <article class="card reveal">
+          <div class="card__icon">{{ p.icon }}</div>
+          <h3 class="h-4">{{ p.title }}</h3>
+          <p>{{ p.text }}</p>
+        </article>
+      {% endfor %}
+    </div>
+    <div class="flex mt-3">
+      {{ m.btn(a.partner.cta, key=a.partner.cta_key, style='primary', size='lg') }}
+      <a href="{{ url_for('contacts') }}" class="btn btn--dark btn--lg">Контакты</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% include "partials/cta_box.html" %}
+
+{% endblock %}

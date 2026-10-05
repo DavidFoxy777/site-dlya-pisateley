@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% import "partials/macros.html" as m %}
+{% set pr = data.program %}
+
+{% block title %}Программа курса — {{ site.brand }}{% endblock %}
+{% block description %}12 модулей за 8 недель: визуальный язык, промпты, обложки, буктрейлеры, оформление канала и автопостинг на нейросетях.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <nav class="crumbs" aria-label="Хлебные крошки">
+      <a href="{{ url_for('index') }}">Главная</a><span>/</span><span>Программа</span>
+    </nav>
+    <span class="mono mt-2">{{ pr.hero.kicker }}</span>
+    <h1 class="h-1 mt-2">{{ pr.hero.title }}</h1>
+    <p class="lead mt-2">{{ pr.hero.lead }}</p>
+    <div class="hero__meta mt-3">
+      {% for i in pr.hero.meta %}<div><b>{{ i.value }}</b><span>{{ i.label }}</span></div>{% endfor %}
+    </div>
+    <div class="flex mt-3">
+      {{ m.btn('Записаться на курс', key='leadProgram', style='primary') }}
+      {{ m.btn('Сравнить тарифы', url=url_for('tariffs'), style='ghost') }}
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    {% for w in pr.marquee %}<span>{{ w }}</span>{% endfor %}
+    {% for w in pr.marquee %}<span>{{ w }}</span>{% endfor %}
+  </div>
+</div>
+
+<section class="section" style="padding-top:clamp(20px,3vw,40px)">
+  <div class="container">
+    <div class="grid" style="grid-template-columns:1fr 300px;gap:clamp(26px,4vw,54px);align-items:start">
+
+      {# ---------- СОДЕРЖАНИЕ ---------- #}
+      <div>
+        {% for b in pr.blocks %}
+          <article class="prog-block" id="{{ b.id }}">
+            <div class="prog-block__head reveal">
+              <span class="mono">{{ b.num }}</span>
+              <div>
+                <h2 class="h-2">{{ b.title }}</h2>
+                {% if b.subtitle %}<p class="lead">{{ b.subtitle }}</p>{% endif %}
+              </div>
+            </div>
+            {% if b.description %}<p class="reveal" style="color:var(--text-dim)">{{ b.description }}</p>{% endif %}
+
+            {% for mod in b.modules %}{{ m.card_module(mod) }}{% endfor %}
+          </article>
+        {% endfor %}
+
+        {# ---------- БОНУСЫ КО ВСЕЙ ПРОГРАММЕ ---------- #}
+        {% set all_bonuses = [] %}
+        {% for b in pr.blocks %}{% for bn in b.bonuses %}{% set _ = all_bonuses.append(bn) %}{% endfor %}{% endfor %}
+        {% if all_bonuses %}
+          <h2 class="h-2 mb-3 reveal">Бонусы к программе</h2>
+          <div class="grid grid-3">
+            {% for bn in all_bonuses %}
+              <article class="card card--gain reveal">
+                <div class="card__icon">✦</div>
+                <h3 class="h-4">{{ bn.title }}</h3>
+                <p>{{ bn.description }}</p>
+              </article>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      {# ---------- БОКОВОЕ МЕНЮ ---------- #}
+      <aside class="side">
+        <div class="toc reveal">
+          <h4 class="mono" style="margin-bottom:14px">Содержание</h4>
+          {% for t in pr.toc %}
+            <a href="#{% if t.title.startswith('Бл') %}b{{ loop.index }}{% else %}bonuses{% endif %}">
+              {{ t.title }} <span>{{ t.range }}</span>
+            </a>
+          {% endfor %}
+        </div>
+
+        {% set f = pr.sidebar.format %}
+        <div class="card mt-2 reveal">
+          <div class="card__num">{{ f.label }}</div>
+          <h3 class="h-4 mt-2">{{ f.title }}</h3>
+          <ul class="card__list">{% for i in f['items'] %}<li>{{ i }}</li>{% endfor %}</ul>
+          {{ m.btn(f.cta, key=f.cta_key, style='primary', size='block') }}
+        </div>
+
+        {% set ol = pr.sidebar.open_lesson %}
+        {% if ol %}
+          <div class="card card--gain mt-2 reveal">
+            <div class="card__num">{{ ol.num or 'Бонус' }}</div>
+            <h3 class="h-4 mt-2">{{ ol.title }}</h3>
+            <p>{{ ol.text }}</p>
+            {{ m.btn(ol.cta, key=ol.cta_key, style='dark', size='block') }}
+          </div>
+        {% endif %}
+
+        {% if pr.sidebar.guarantees %}
+          <div class="card mt-2 reveal">
+            <div class="card__num">Гарантии</div>
+            <ul class="card__list">
+              {% for g in pr.sidebar.guarantees %}<li>{{ g }}</li>{% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+{# ---------- ФИНАЛЬНЫЙ БЛОК ---------- #}
+{% set c = pr.cta_box %}
+<section class="section">
+  <div class="container">
+    <div class="cta-box reveal" data-reveal="zoom">
+      <h2 class="h-2">{{ c.title }}</h2>
+      <p class="lead mt-2">{{ c.lead }}</p>
+      <div class="flex" style="justify-content:center">
+        {{ m.btn(c.primary_cta, key=c.primary_cta_key, style='primary', size='lg') }}
+        <a href="{{ c.secondary_cta_href | replace('.html','') if c.secondary_cta_href else url_for('tariffs') }}" class="btn btn--ghost btn--lg">{{ c.secondary_cta }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

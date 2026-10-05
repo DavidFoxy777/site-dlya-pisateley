@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% import "partials/macros.html" as m %}
+{% set cp = data.contacts_page %}
+
+{% block title %}Контакты — {{ site.brand }}{% endblock %}
+{% block description %}Оставьте заявку на обучение — отвечу лично в течение рабочего дня и подскажу, с какого тарифа начать.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <nav class="crumbs" aria-label="Хлебные крошки">
+      <a href="{{ url_for('index') }}">Главная</a><span>/</span><span>Контакты</span>
+    </nav>
+    <h1 class="h-1 mt-2">{{ cp.hero.title }}</h1>
+    <p class="lead mt-2">{{ cp.hero.lead }}</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:clamp(16px,2.5vw,34px)">
+  <div class="container">
+    <div class="grid" style="grid-template-columns:1.25fr .85fr;gap:clamp(26px,4vw,54px);align-items:start">
+
+      {# ============ ФОРМА ============ #}
+      <div class="card reveal" style="padding:clamp(24px,3.4vw,42px)">
+        <span class="mono">Заявка на обучение</span>
+        <h2 class="h-3 mt-2 mb-3">Занять место на потоке</h2>
+
+        {# Адрес обработчика, если он задан в content.json → form.endpoint,
+           подставляет Jinja. Если пусто — заявка сохранится локально,
+           в data/leads.json, и напечатается в терминале. #}
+        <form class="form" data-form
+              {% if data.form.endpoint %}data-endpoint="{{ data.form.endpoint }}"{% endif %}
+              novalidate>
+          <div class="form__row">
+            <div class="field">
+              <label for="f-name">Как вас зовут *</label>
+              <input type="text" id="f-name" name="name" placeholder="Анна" required>
+              <div class="field__err"></div>
+            </div>
+            <div class="field">
+              <label for="f-contact">Telegram или почта *</label>
+              <input type="text" id="f-contact" name="contact" placeholder="@nickname или a@a.ru" required>
+              <div class="field__err"></div>
+            </div>
+          </div>
+
+          <div class="form__row">
+            <div class="field">
+              <label for="f-email">Почта для ответа</label>
+              <input type="email" id="f-email" name="email" placeholder="you@example.com">
+              <div class="field__err"></div>
+            </div>
+            <div class="field">
+              <label for="f-tariff">Интересный тариф</label>
+              <select id="f-tariff" name="tariff">
+                <option value="">— пока не определился —</option>
+                {% for t in data.tariffs['items'] %}
+                  <option value="{{ t.num | lower | replace(' ', '-') }}">{{ t.name }} — {{ t.description }}</option>
+                {% endfor %}
+                <option value="consult">Пока только консультацию</option>
+              </select>
+              <div class="field__err"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-task">Что хотите научиться делать?</label>
+            <textarea id="f-task" name="task" placeholder="Например: обложка к дебютному роману + оформление канала. Хочется начать с нуля."></textarea>
+            <div class="field__err"></div>
+          </div>
+
+          <label class="check">
+            <input type="checkbox" name="consent" value="1" required>
+            <span>Согласен(на) на обработку персональных данных в соответствии с
+              <a href="{{ url_for('privacy') }}" style="color:var(--accent)">политикой конфиденциальности</a></span>
+          </label>
+
+          <button type="submit" class="btn btn--primary btn--lg btn--block mt-2">
+            Отправить заявку <span class="arr">→</span>
+          </button>
+
+          <div class="form__status" role="status" aria-live="polite"></div>
+
+          <div class="form-ok">
+            <span>✓</span>
+            <div><b>Заявка принята.</b><br>Свяжемся в течение рабочего дня. Если вопрос срочный —
+              напишите в Telegram.</div>
+          </div>
+
+          <p class="form__note">
+            Нажимая кнопку, вы соглашаетесь с
+            <a href="{{ url_for('privacy') }}">политикой конфиденциальности</a>. Данные не передаются третьим лицам.
+          </p>
+        </form>
+
+        {% if not data.form.endpoint %}
+          {{ m.notice('Форма уже работает.',
+                      'Заявка сохраняется в <b>data/leads.json</b> и печатается в терминале, где запущен сервер. Чтобы отправлять их в Telegram, Google&nbsp;Forms или CRM — укажите адрес обработчика в <b>content.json</b> → <b>form.endpoint</b>.') }}
+        {% endif %}
+      </div>
+
+      {# ============ КОНТАКТЫ ============ #}
+      <aside>
+        <div class="card reveal">
+          <span class="mono">Связаться напрямую</span>
+          <ul class="footer__contact mt-3" style="display:grid;gap:14px">
+            <li><b>Почта</b> {{ m.contact_btn('Написать', 'email', 'ghost') }}</li>
+            <li><b>Телефон</b> {{ m.contact_btn('Позвонить', 'phone', 'ghost') }}</li>
+            <li><b>Telegram</b> {% set q = cta_url('telegramChat') %}
+              <a href="{{ q or '#' }}" {{ 'aria-disabled=true data-unset=telegramChat' if not q }}>Написать</a></li>
+            <li><b>WhatsApp</b> {{ m.contact_btn('Написать', 'whatsapp', 'ghost') }}</li>
+            <li><b>Город</b> <span style="color:var(--text)">{{ contact_text('address') }}</span></li>
+          </ul>
+
+          <div class="socials mt-3">
+            {% for s in footer_data.socials %}
+              {% if s.cta %}
+                {% set q = cta_url(s.cta) %}
+                <a href="{{ q or '#' }}" aria-label="{{ s.label }}"
+                   {{ 'aria-disabled=true data-unset=' ~ s.cta if not q }}>{{ s.short }}</a>
+              {% else %}
+                {% set v = contact_value(s.contact) %}
+                <a href="{{ contact_href(s.contact) }}" aria-label="{{ s.label }}"
+                   class="{{ 'is-empty' if not v }}">{{ s.short }}</a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="card mt-2 reveal">
+          <span class="mono">Часы ответа</span>
+          <div class="mt-2" style="display:grid;gap:11px;font-size:14.5px;color:var(--text-dim)">
+            {% for h in cp.hours %}
+              <div style="display:flex;justify-content:space-between;gap:14px">
+                <span>{{ h.day }}</span>
+                <b style="color:{{ 'var(--text-faint)' if h.closed else 'var(--text)' }}">{{ h.value }}</b>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="card mt-2 reveal">
+          <span class="mono">Реквизиты</span>
+          <ul class="footer__contact mt-3" style="display:grid;gap:12px">
+            {% for r in cp.requisites %}<li><b>{{ r.label }}</b> <span>{{ contact_text(r.key) }}</span></li>{% endfor %}
+          </ul>
+          <p class="form__note mt-2">Реквизиты подставляются из <b>content.json</b> → <b>contacts</b>.</p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

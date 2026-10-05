@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% import "partials/macros.html" as m %}
+{% set f = data.faq %}
+
+{% block title %}Вопросы и ответы — {{ site.brand }}{% endblock %}
+{% block description %}Ответы на частые вопросы о курсе: нужен ли опыт в дизайне, платные ли сервисы, сколько времени в неделю нужно.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <nav class="crumbs" aria-label="Хлебные крошки">
+      <a href="{{ url_for('index') }}">Главная</a><span>/</span><span>Вопросы</span>
+    </nav>
+    <span class="mono mt-2">{{ f.hero.kicker }}</span>
+    <h1 class="h-1 mt-2">{{ f.hero.title }}</h1>
+    <p class="lead mt-2">{{ f.hero.lead }}</p>
+    <div class="flex mt-3">
+      {{ m.btn('Задать свой вопрос', key='support', style='primary') }}
+      {{ m.btn('Написать в Telegram', key='telegramChat', style='ghost') }}
+    </div>
+  </div>
+</section>
+
+{% for g in f.groups %}
+<section class="section {{ 'section--alt' if loop.index0 % 2 else '' }}">
+  <div class="container">
+    {{ m.head('', g.title, '') }}
+    <div class="acc reveal" data-single>
+      {% for item in g['items'] %}
+        <div class="acc__item">
+          <button class="acc__btn" aria-expanded="false">{{ item.q }}<span class="acc__ico">+</span></button>
+          <div class="acc__body"><div>{{ item.a | safe }}</div></div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endfor %}
+
+{% set c = f.cta_box %}
+{% if c %}
+<section class="section">
+  <div class="container">
+    <div class="cta-box reveal" data-reveal="zoom">
+      <h2 class="h-2">{{ c.title }}</h2>
+      <p class="lead mt-2">{{ c.lead }}</p>
+      <div class="flex" style="justify-content:center">
+        {{ m.btn(c.primary_cta, key=c.primary_cta_key, style='primary', size='lg') }}
+        <a href="{{ url_for('contacts') }}" class="btn btn--ghost btn--lg">{{ c.secondary_cta }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

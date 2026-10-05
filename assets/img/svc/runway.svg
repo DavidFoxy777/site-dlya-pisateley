@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="Runway">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1F2937"/><stop offset="1" stop-color="#6B7280"/>
+    </linearGradient>
+    <radialGradient id="halo" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#6B7280" stop-opacity=".60"/>
+      <stop offset="1" stop-color="#6B7280" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0v40" fill="none" stroke="#ffffff" stroke-opacity=".055"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="400" fill="#0b0d10"/>
+  <rect width="400" height="400" fill="url(#grid)"/>
+  <circle cx="200" cy="196" r="188" fill="url(#bg)" opacity=".26"/>
+  <circle cx="200" cy="196" r="132" fill="url(#halo)"/>
+  <g transform="translate(200,196)">    <g stroke="#ffffff" stroke-width="13" stroke-linecap="round" opacity=".34">
+      <path d="M-108 -46 H-72"/><path d="M-108 0 H-90"/><path d="M-108 46 H-72"/>
+    </g>
+    <g stroke="#ffffff" stroke-width="13" stroke-linecap="round" opacity=".34">
+      <path d="M108 -46 H72"/><path d="M108 0 H90"/><path d="M108 46 H72"/>
+    </g>
+    <path d="M-52 0 L52 -62 L52 62 Z" fill="#ffffff"/>
+  </g>
+</svg>

@@ -1,0 +1,56 @@
+{# ============================================================
+   БАЗОВЫЙ ШАБЛОН — каркас всех страниц.
+   Определяет: где шапка, где подвал, что подключается.
+   Блоки, которые можно переопределить: title, description,
+   content, scripts, body_class, page_id
+   ============================================================ #}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ site.brand }} — {{ site.tagline }}{% endblock %}</title>
+<meta name="description" content="{% block description %}{{ site.description }}{% endblock %}">
+{% if site.keywords %}<meta name="keywords" content="{{ site.keywords | join(', ') }}">{% endif %}
+<meta name="theme-color" content="#08090b">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site.brand }}">
+<meta property="og:title" content="{{ self.title() }}">
+<meta property="og:description" content="{{ self.description() }}">
+{% if site.og_image %}<meta property="og:image" content="{{ asset(site.og_image) }}">{% endif %}
+<meta name="twitter:card" content="summary_large_image">
+
+{% if site.domain %}<link rel="canonical" href="{{ site.domain.rstrip('/') }}{{ request.path }}">{% endif %}
+{% if site.favicon %}<link rel="icon" type="image/svg+xml" href="{{ asset(site.favicon) }}">{% endif %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20251005-02">
+
+{% block head %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}{% endblock %}" data-page="{{ page }}">
+
+{# Фон намеренно пустой: без орбов, сетки, шума и пыли.
+   Этот слой был в старой версии и мешал читать текст. #}
+{% block background %}{% endblock %}
+
+{% include "partials/header.html" %}
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+{% include "partials/footer.html" %}
+
+{# Аналитика приходит из content.json → analytics, а не из отдельного
+   config.js: сейчас настройки сайта живут в одном файле, и второй
+   источник правды только путает — заполнил content.json, а счётчик
+   так и не подключился. #}
+<script>window.SITE = { analytics: {{ (data.analytics if data and data.analytics else {}) | tojson }} };</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

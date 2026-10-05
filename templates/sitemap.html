@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% import "partials/macros.html" as m %}
+
+{% block title %}Карта сайта — {{ site.brand }}{% endblock %}
+{% block description %}Все страницы сайта в одном списке: программа, кейсы, тарифы, преподаватель, вопросы, контакты.{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <nav class="crumbs" aria-label="Хлебные крошки">
+      <a href="{{ url_for('index') }}">Главная</a><span>/</span><span>Карта сайта</span>
+    </nav>
+    <h1 class="h-1 mt-2">Карта сайта</h1>
+    <p class="lead mt-2">Все разделы на одной странице — чтобы не искать.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:clamp(20px,3vw,40px)">
+  <div class="container">
+    <div class="grid grid-2">
+      {% for item in nav_items %}
+        <a class="card reveal" href="{{ item.url | replace('index.html','') or url_for('index') if item.url != '/' else url_for('index') }}">
+          <h3 class="h-4">{{ item.label }}</h3>
+          <p class="mono">{{ item.url }}</p>
+        </a>
+      {% endfor %}
+    </div>
+
+    {{ m.head('Разделы главной', 'Что есть на главной странице', '') }}
+    <div class="grid grid-3">
+      {% for s in [
+        {'t':'Что вы сможете','u':'/#skills'},
+        {'t':'Инструменты','u':'/#skills'},
+        {'t':'Превью проектов','u':'/#showcase'},
+        {'t':'Как проходит','u':'/#how'},
+        {'t':'Цифры','u':'/#how'},
+        {'t':'Программа','u':'/#modules'},
+        {'t':'Тарифы','u':'/#modules'},
+        {'t':'Преподаватель','u':'/#how'},
+        {'t':'Вопросы','u':'/#faq'} ] %}
+        <a class="card reveal" href="{{ s.u }}"><h3 class="h-4">{{ s.t }}</h3></a>
+      {% endfor %}
+    </div>
+
+    {% if data.cases.categories %}
+      {{ m.head('Кейсы', 'Работы по категориям', '') }}
+      <div class="filters reveal" data-filters="cases">
+        {% for c in data.cases.categories %}<span class="filter">{{ c.label }}</span>{% endfor %}
+      </div>
+      <div class="grid grid-3 mt-3" data-cat="cases">
+        {% for item in data.cases['items'] %}{{ m.card_case(item) }}{% endfor %}
+      </div>
+    {% endif %}
+
+    {{ m.head('Документы', 'Юридические страницы', 'Это шаблоны. Перед публикацией согласуйте их с юристом и подставьте свои реквизиты.') }}
+    <div class="grid grid-3">
+      {% for l in footer_data.legal_links %}
+        <a class="card reveal" href="{{ l.url }}"><h3 class="h-4">{{ l.label }}</h3></a>
+      {% endfor %}
+    </div>
+
+    {{ m.notice('Разделы «Блог» и «Полезные материалы»',
+                'готовы к наполнению — ссылки на них пока заглушки в <b>content.json</b> → <b>footer.columns</b>.') }}
+  </div>
+</section>
+{% endblock %}

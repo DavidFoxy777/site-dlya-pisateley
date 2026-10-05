@@ -1,0 +1,15 @@
+# заявки с формы
+data/leads.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# редакторы
+.vscode/
+.idea/

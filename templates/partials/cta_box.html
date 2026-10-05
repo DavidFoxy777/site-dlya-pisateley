@@ -1,0 +1,21 @@
+{% import "partials/macros.html" as m %}
+{# ============================================================
+   ФИНАЛЬНЫЙ БЛОК «ПОГОВОРИМ?» — общий для всех страниц.
+   Две кнопки уже работают: пока в content.json пусто,
+   они показывают подсказку вместо перехода.
+   ============================================================ #}
+<section class="section">
+  <div class="container">
+    <div class="cta-box reveal" data-reveal="zoom">
+      <h2 class="h-1">Поговорим?</h2>
+      <p class="lead mt-2">Ответьте на пару вопросов — подскажу, с какого тарифа
+         начать и нужен ли вам вообще этот курс. Честно скажу, если не нужен.</p>
+      <div class="flex" style="justify-content:center">
+        {{ m.btn('Записаться на курс', key='leadBottom', style='primary', size='lg') }}
+        {{ m.btn('Задать вопрос', key='support', style='ghost', size='lg') }}
+      </div>
+      <p class="form__note mt-2">Нажимая кнопку, вы соглашаетесь с
+        <a href="{{ url_for('privacy') }}">политикой конфиденциальности</a>.</p>
+    </div>
+  </div>
+</section>

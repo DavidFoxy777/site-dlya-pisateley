@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Страница не найдена — {{ site.brand }}{% endblock %}
+{% block body_class %}page-404{% endblock %}
+
+{% block content %}
+<section class="section" style="padding-top:clamp(60px,10vw,140px)">
+  <div class="container" style="text-align:center">
+    <span class="mono">ошибка 404</span>
+    <h1 class="h-hero mt-2">Такой страницы<br><span class="grad">ещё нет</span></h1>
+    <p class="lead mt-3" style="max-width:620px;margin-inline:auto">
+      Возможно, ссылка устарела или в адресе опечатка. На главной есть всё,
+      о чём курс, — начните оттуда.
+    </p>
+
+    <div class="flex mt-3" style="justify-content:center">
+      <a href="{{ url_for('index') }}" class="btn btn--primary btn--lg">На главную <span class="arr">→</span></a>
+      <a href="{{ url_for('program') }}" class="btn btn--dark btn--lg">Программа курса</a>
+    </div>
+
+    <div class="grid grid-3 mt-4" style="text-align:left">
+      <a class="card reveal" href="{{ url_for('program') }}">
+        <h3 class="h-4">Программа</h3>
+        <p>12 модулей: от мудборда до автопостинга.</p>
+      </a>
+      <a class="card reveal" href="{{ url_for('tariffs') }}">
+        <h3 class="h-4">Тарифы</h3>
+        <p>Старт, Интенсив и Наставничество.</p>
+      </a>
+      <a class="card reveal" href="{{ url_for('contacts') }}">
+        <h3 class="h-4">Контакты</h3>
+        <p>Задать вопрос и записаться на курс.</p>
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

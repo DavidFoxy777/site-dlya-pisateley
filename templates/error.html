@@ -1,0 +1,45 @@
+{# ============================================================
+   СТРАНИЦА ОШИБКИ 500
+
+   ВАЖНО: этот шаблон намеренно НЕ наследует base.html.
+   Он должен работать, когда content.json сломан — а именно в
+   этом случае мы сюда попадаем. Любая зависимость от данных
+   (меню, кнопки, футер) привела бы к новой ошибке на
+   рендере страницы ошибки.
+   ============================================================ #}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ошибка — {{ brand }}</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#08090b">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<main>
+<section class="section" style="padding-top:clamp(60px,10vw,140px)">
+  <div class="container" style="text-align:center">
+    <span class="mono">ошибка 500</span>
+    <h1 class="h-hero mt-2">Что-то сломалось<br><span class="grad">на сервере</span></h1>
+
+    <div class="card reveal" style="text-align:left;max-width:780px;margin:clamp(26px,4vw,44px) auto 0">
+      <span class="mono">Что произошло</span>
+      <p class="mt-2" style="color:var(--text-dim)">{{ message }}</p>
+      <p class="form__note mt-2">
+        Чаще всего это опечатка в <b>content.json</b> — лишняя запятая или
+        не закрытая кавычка. Проверьте файл и обновите страницу.
+      </p>
+    </div>
+
+    <div class="flex mt-3" style="justify-content:center">
+      <a href="/" class="btn btn--primary btn--lg">На главную <span class="arr">→</span></a>
+    </div>
+    <p class="mono mt-3" style="color:var(--text-faint)">{{ brand }}</p>
+  </div>
+</section>
+</main>
+</body>
+</html>

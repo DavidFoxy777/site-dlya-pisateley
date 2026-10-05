@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% import "partials/macros.html" as m %}
+{% set t = data.tariffs %}
+
+{% block title %}Тарифы — {{ site.brand }}{% endblock %}
+{% block description %}Три формата обучения: Старт, Интенсив и Наставничество. Сравнение, рассрочка и ответы по оплате.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <nav class="crumbs" aria-label="Хлебные крошки">
+      <a href="{{ url_for('index') }}">Главная</a><span>/</span><span>Тарифы</span>
+    </nav>
+    <span class="mono mt-2">{{ t.hero.kicker }}</span>
+    <h1 class="h-1 mt-2">{{ t.hero.title | safe }}</h1>
+    <p class="lead mt-2">{{ t.hero.lead }}</p>
+    <div class="flex mt-3">
+      {{ m.btn('Записаться', key='leadTariff', style='primary') }}
+      {{ m.btn('Задать вопрос по тарифам', key='support', style='ghost') }}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:clamp(20px,3vw,40px)">
+  <div class="container">
+    <div class="grid grid-3">
+      {% for item in t['items'] %}{{ m.card_tariff(item) }}{% endfor %}
+    </div>
+    {% if t.notice %}{{ m.notice(t.notice.title, t.notice.text) }}{% endif %}
+  </div>
+</section>
+
+{# ---------- СРАВНЕНИЕ ---------- #}
+{% set c = t.compare %}
+<section class="section section--alt">
+  <div class="container">
+    {{ m.head(c.kicker, c.title, '') }}
+    <div class="table-wrap reveal">
+      <table class="table">
+        <thead>
+          <tr><th>{{ c.columns[0] }}</th>{% for col in c.columns[1:] %}<th>{{ col }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in c.rows %}
+            <tr>
+              <td>{{ row.label }}</td>
+              {% for v in row['values'] %}<td>{{ v | safe }}</td>{% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{# ---------- СПОСОБЫ ОПЛАТЫ ---------- #}
+{% if t.payment %}
+<section class="section">
+  <div class="container">
+    {{ m.head(t.payment_head.kicker, t.payment_head.title, t.payment_head.lead) }}
+    <div class="grid grid-3">
+      {% for p in t.payment %}
+        <article class="card reveal">
+          <div class="card__icon"><span class="ni">{{ p.icon or '₽' }}</span></div>
+          <h3 class="h-4">{{ p.title }}</h3>
+          <p>{{ p.text }}</p>
+        </article>
+      {% endfor %}
+    </div>
+    {% if t.extras %}
+      <div class="card mt-3 reveal">
+        <span class="mono">Что ещё важно</span>
+        <ul class="card__list mt-2">
+          {% for e in t.extras %}<li>{{ e | safe }}</li>{% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{# ---------- ВОПРОСЫ ПО ДЕНЬГАМ ---------- #}
+{% if t.faq %}
+<section class="section section--alt">
+  <div class="container">
+    {{ m.head(t.faq_head.kicker, t.faq_head.title, t.faq_head.lead) }}
+    <div class="acc reveal" data-single>
+      {% for item in t.faq %}
+        <div class="acc__item">
+          <button class="acc__btn" aria-expanded="false">{{ item.q }}<span class="acc__ico">+</span></button>
+          <div class="acc__body"><div>{{ item.a | safe }}</div></div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="flex mt-3">
+      {{ m.btn(t.faq_buttons[0].text if t.faq_buttons else 'Задать вопрос', key='support', style='ghost') }}
+      {{ m.btn(t.faq_buttons[1].text if t.faq_buttons | length > 1 else 'Написать в Telegram', key='telegramChat', style='ghost') }}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% include "partials/cta_box.html" %}
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% import "partials/macros.html" as m %}
+{% set cs = data.cases %}
+
+{% block title %}Кейсы учеников — {{ site.brand }}{% endblock %}
+{% block description %}Работы выпускников: обложки, буктрейлеры, оформленные каналы, ИИ-фотосессии и настроенный автопостинг.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="container">
+    <nav class="crumbs" aria-label="Хлебные крошки">
+      <a href="{{ url_for('index') }}">Главная</a><span>/</span><span>Кейсы</span>
+    </nav>
+    <span class="mono mt-2">{{ cs.hero.kicker }}</span>
+    <h1 class="h-1 mt-2">{{ cs.hero.title | safe }}</h1>
+    <p class="lead mt-2">{{ cs.hero.lead }}</p>
+    <div class="flex mt-3">
+      {{ m.btn('Записаться на курс', key='leadCase', style='primary') }}
+      {{ m.btn('Смотреть программу', url=url_for('program'), style='ghost') }}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:clamp(16px,2.5vw,34px)">
+  <div class="container">
+    {# ---------- ФИЛЬТРЫ ---------- #}
+    <div class="filters reveal" data-filters="cases">
+      {% for c in cs.categories %}
+        <button class="filter {{ 'is-active' if c.key == 'all' }}" data-filter="{{ c.key }}">{{ c.label }}</button>
+      {% endfor %}
+    </div>
+
+    {# ---------- РАБОТЫ ---------- #}
+    <div class="grid grid-3 mt-3" data-cat="cases">
+      {% for item in cs['items'] %}{{ m.card_case(item) }}{% endfor %}
+    </div>
+
+    {% if cs.notice %}{{ m.notice(cs.notice.title, cs.notice.text) }}{% endif %}
+  </div>
+</section>
+
+{# ---------- ОТЗЫВЫ ---------- #}
+{% if cs.reviews %}
+<section class="section section--alt">
+  <div class="container">
+    {{ m.head(cs.reviews_head.kicker, cs.reviews_head.title, cs.reviews_head.lead) }}
+    <div class="grid grid-3">
+      {% for item in cs.reviews %}{{ m.card_quote(item) }}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% include "partials/cta_box.html" %}
+
+{% endblock %}

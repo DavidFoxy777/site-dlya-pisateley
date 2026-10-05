@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% import "partials/macros.html" as m %}
+
+{% block title %}{{ site.brand }} — {{ site.tagline }}{% endblock %}
+
+{% block content %}
+
+{# ================= ГЕРОЙ ================= #}
+{# Одно колонка: без макета-окошка, без плавающих подписей.
+   Раньше справа стоял мокап «генератора» с точками, заголовком
+   и парящими бейджами — он перекрывал текст и выглядел как
+   чужое приложение. Вместо него — обычный список результата. #}
+<section class="hero">
+  <div class="container">
+    {% set h = data.home.hero %}
+    <span class="badge badge--accent">{{ h.badge }}</span>
+    <h1 class="h-hero">{{ h.title_html | safe }}</h1>
+    <p class="lead hero__lead">{{ h.lead | safe }}</p>
+    <div class="flex hero__cta">
+      {{ m.btn(h.cta_primary.text, key=h.cta_primary.cta_key, style='primary', size='lg') }}
+      <a href="{{ url_for('program') }}" class="btn btn--dark btn--lg">{{ h.cta_secondary.text }}</a>
+    </div>
+
+    <ul class="hero__list">
+      {% for r in h.results %}
+        <li><b>{{ r.value }}</b><span>{{ r.label }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{# --- бегущая строка --- #}
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    {% for w in data.home.marquee %}<span>{{ w }}</span>{% endfor %}
+    {% for w in data.home.marquee %}<span>{{ w }}</span>{% endfor %}
+  </div>
+</div>
+
+{# ================= 01. БОЛЬ ================= #}
+{% set s = data.home.pain %}
+<section class="section">
+  <div class="container">
+    {{ m.head(s.kicker, s.title_html, s.lead) }}
+    <div class="grid grid-4">
+      {% for item in s['items'] %}{{ m.card_pain(item) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ================= 02. ЧТО ВЫ СМОЖЕТЕ ================= #}
+<section class="section section--alt" id="skills">
+  <div class="container">
+    {{ m.head(data.home.skills.kicker, data.home.skills.title_html, data.home.skills.lead) }}
+    <div class="grid grid-3">
+      {% for item in data.home.skills['items'] %}{{ m.card_gain(item) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ================= 03. ВИТРИНА НЕЙРОСЕТЕЙ ================= #}
+<section class="section vitrine" data-vitrine data-vit-label="сервисы из программы">
+  <div class="container">
+    {{ m.head('02 — инструменты', 'Какими сервисами<br>мы работаем', 'Пятнадцать инструментов, которые вы освоите на курсе. Наведите на карточки — список остановится.') }}
+
+    <div class="filters reveal">
+      {% for key, label in service_categories.items() %}
+        <button class="filter {{ 'is-active' if key == 'all' }}" data-vit-filter="{{ key }}">{{ label }}</button>
+      {% endfor %}
+    </div>
+
+    <div class="vitrine__viewport reveal" data-depth="0.4">
+      <div class="vitrine__track">
+        {% for svc in services %}{{ m.card_service(svc) }}{% endfor %}
+      </div>
+    </div>
+
+    <div class="vitrine__bar reveal">
+      <button class="btn btn--ghost btn--icon" type="button" data-vit-prev aria-label="Назад">←</button>
+      <div class="vitrine__dots"></div>
+      <button class="btn btn--ghost btn--icon" type="button" data-vit-next aria-label="Вперёд">→</button>
+      <span class="vitrine__count mono" data-vit-count></span>
+    </div>
+  </div>
+</section>
+
+{# ================= 04. ПРЕВЬЮ ПРОЕКТОВ ================= #}
+{% set sh = data.home.showcase %}
+<section class="section section--alt showcase" id="showcase" data-showcase>
+  <div class="container">
+    {{ m.head(sh.kicker, sh.title, sh.lead) }}
+
+    <div class="showcase__stack reveal" data-reveal="zoom">
+      {% for it in sh['items'] %}
+        <article class="showcase__card" data-pos="{{ loop.index0 }}"
+                 data-title="{{ it.title }}"
+                 data-text="{{ it.text }}"
+                 data-tags="{{ tag_list(it.tags) }}">
+          <img src="{{ asset(it.cover_img) }}" width="600" height="900" alt="{{ it.cover_alt }}" loading="lazy">
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="showcase__bar reveal">
+      <div class="showcase__meta">
+        <h3 class="h-3" data-show-title></h3>
+        <p data-show-text></p>
+        <div class="showcase__tags" data-show-tags></div>
+      </div>
+      <div class="showcase__nav">
+        <button class="btn btn--ghost btn--icon" type="button" data-show-prev aria-label="Предыдущий проект">←</button>
+        <div class="showcase__dots"></div>
+        <button class="btn btn--ghost btn--icon" type="button" data-show-next aria-label="Следующий проект">→</button>
+        <span class="showcase__n mono" data-show-n>01 / 04</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ================= 05. КАК ПРОХОДИТ ================= #}
+{% set hw = data.home.how %}
+<section class="section" id="how">
+  <div class="container">
+    {{ m.head(hw.kicker, hw.title_html, hw.lead) }}
+    <div class="grid grid-4">
+      {% for item in hw['items'] %}{{ m.card_step(item) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ================= 06. ЦИФРЫ ================= #}
+<section class="section section--alt section--tight">
+  <div class="container">
+    <div class="grid grid-4 stats">
+      {% for s in data.home.stats %}
+        <div class="stat reveal">
+          <b><span data-count="{{ s.value }}">0</span>{{ s.suffix }}</b>
+          <span>{{ s.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ================= 07. ПРОГРАММА (4 блока) ================= #}
+{% set pr = data.program %}
+<section class="section" id="modules">
+  <div class="container">
+    {{ m.head('04 — программа', 'Что вы пройдёте<br>за 8 недель', 'Четыре блока, двенадцать модулей, ноль теории без практики.') }}
+
+    <div class="tabs reveal" data-tabs="prog">
+      {% for b in pr.blocks %}
+        <button class="tab {{ 'is-active' if loop.first }}" data-tab="{{ b.id }}">{{ b.num }} · {{ b.title }}</button>
+      {% endfor %}
+    </div>
+
+    {% for b in pr.blocks %}
+      <div class="panel {{ 'is-active' if loop.first }}" data-panel="{{ b.id }}" data-reveal="zoom">
+        {% for mod in b.modules %}{{ m.card_module(mod) }}{% endfor %}
+        {% if b.bonuses %}
+          <h2 class="h-2 mb-3 mt-4 reveal">Бонусы блока «{{ b.title }}»</h2>
+          <div class="grid grid-3">
+            {% for bn in b.bonuses %}
+              <article class="card card--gain reveal">
+                <div class="card__icon">✦</div>
+                <h3 class="h-4">{{ bn.title }}</h3>
+                <p>{{ bn.description }}</p>
+              </article>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <div class="mt-3 flex">
+      <a href="{{ url_for('program') }}" class="btn btn--ghost">Вся программа по урокам <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+{# ================= 08. РАБОТЫ УЧЕНИКОВ ================= #}
+{% set cs = data.home.cases %}
+<section class="section section--alt">
+  <div class="container">
+    {{ m.head(cs.kicker, cs.title, cs.lead) }}
+    <div class="grid grid-3">
+      {% for item in cs['items'] %}{{ m.card_case(item) }}{% endfor %}
+    </div>
+    <div class="mt-3 flex">
+      <a href="{{ url_for('cases') }}" class="btn btn--ghost">Все {{ data.cases['items'] | length }} работ <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+{# ================= 09. ТАРИФЫ ================= #}
+<section class="section">
+  <div class="container">
+    {{ m.head('06 — тарифы', 'Сколько стоит обучение', 'Три формата. Начните с модулей 01–04, если сомневаетесь.') }}
+    <div class="grid grid-3">
+      {% for t in data.tariffs['items'] %}{{ m.card_tariff(t) }}{% endfor %}
+    </div>
+    <div class="mt-3 flex">
+      <a href="{{ url_for('tariffs') }}" class="btn btn--ghost">Сравнить тарифы <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+{# ================= 10. ПРЕПОДАВАТЕЛЬ ================= #}
+{% set t = data.home.teacher %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="grid" style="grid-template-columns:.85fr 1.15fr;gap:clamp(28px,4vw,58px);align-items:center">
+      <div class="reveal">
+        <div class="person__photo" style="min-height:420px">место<br>для фото</div>
+        <p class="mono mt-2">ФОТО ПРЕПОДАВАТЕЛЯ — assets/img/</p>
+      </div>
+      <div class="reveal">
+        {{ m.head(t.kicker, t.title_html, '') }}
+        <p class="lead">{{ t.lead }}</p>
+        <p class="mt-2" style="color:var(--text-dim)">{{ t.bio | safe }}</p>
+        <div class="hero__meta mt-3">
+          {% for f in t.facts %}<div><b>{{ f.value }}</b><span>{{ f.label }}</span></div>{% endfor %}
+        </div>
+        <div class="flex mt-3">
+          <a href="{{ url_for('about') }}" class="btn btn--ghost">О преподавателе <span class="arr">→</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ================= 11. ОТЗЫВЫ ================= #}
+{% set tm = data.home.testimonials %}
+<section class="section">
+  <div class="container">
+    {{ m.head(tm.kicker, tm.title, tm.lead) }}
+    <div class="grid grid-3">
+      {% for item in tm['items'] %}{{ m.card_quote(item) }}{% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ================= 12. ВОПРОСЫ ================= #}
+{% set fq = data.home.faq %}
+<section class="section section--alt" id="faq">
+  <div class="container">
+    {{ m.head(fq.kicker, fq.title, fq.lead) }}
+    <div class="acc reveal" data-single>
+      {% for item in fq['items'] %}
+        <div class="acc__item">
+          <button class="acc__btn" aria-expanded="false">{{ item.q }}<span class="acc__ico">+</span></button>
+          <div class="acc__body"><div>{{ item.a | safe }}</div></div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="flex mt-3">
+      <a href="{{ url_for('faq') }}" class="btn btn--ghost">Все вопросы <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+{# ================= ФИНАЛЬНЫЙ CTA ================= #}
+{% set cf = data.home.cta_final %}
+<section class="section">
+  <div class="container">
+    <div class="cta-box reveal" data-reveal="zoom">
+      <span class="badge badge--accent badge--dot">Свободных мест на потоке: 12</span>
+      <h2 class="h-1 mt-2">{{ cf.title_html | safe }}</h2>
+      <p class="lead mt-2">{{ cf.text }}</p>
+      <div class="flex" style="justify-content:center">
+        {{ m.btn(cf.btn, key=cf.btn_key, style='primary', size='lg') }}
+        {{ m.btn('Бесплатная консультация', key='consult', style='ghost', size='lg') }}
+      </div>
+      {% if cf.note %}<p class="form__note mt-2">{{ cf.note | safe }}</p>{% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

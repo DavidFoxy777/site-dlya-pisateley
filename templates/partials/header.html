@@ -1,0 +1,34 @@
+{# ============================================================
+   ШАПКА — логотип, меню из content.json → nav, кнопки.
+   Кнопки «Задать вопрос» и «Записаться» уже работают:
+   если ссылка в content.json пустая — стоят как is-empty
+   и показывают подсказку вместо перехода.
+   ============================================================ #}
+<header class="header" id="header">
+  <div class="container header__inner">
+    <a href="{{ url_for('index') }}" class="logo" aria-label="{{ site.brand }} — на главную">
+      <span class="logo__mark">В</span>
+      <span class="logo__text">{{ site.brand | upper }}<small>{{ site.creator }}</small></span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Основная навигация">
+      {% for item in nav_items %}
+        <a href="{{ url_for(item.url.strip('/')) if item.url and item.url != '/' else url_for('index') }}"
+           class="{{ 'is-active' if page == item.url.strip('/') or (item.url == '/' and page == 'index') else '' }}">{{ item.label }}</a>
+      {% endfor %}
+    </nav>
+
+    <div class="header__actions">
+      {% set q = cta_url('support') %}
+      <a href="{{ q or '#' }}" class="btn btn--ghost btn--sm {{ 'is-empty' if not q }}"
+         {% if not q %}aria-disabled="true" data-unset="support"{% endif %}>Задать вопрос</a>
+      {% set q = cta_url('lead') %}
+      <a href="{{ q or '#' }}" class="btn btn--primary btn--sm {{ 'is-empty' if not q }}"
+         {% if not q %}aria-disabled="true" data-unset="lead"{% endif %}>Записаться</a>
+    </div>
+
+    <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>

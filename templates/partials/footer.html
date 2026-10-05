@@ -1,0 +1,76 @@
+{# ============================================================
+   ПОДВАЛ — колонки и контакты из content.json → footer.
+   Незаполненные контакты показываются прочером, ссылки на
+   разделы, которых ещё нет, помечены пустыми.
+   ============================================================ #}
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__about">
+        <a href="{{ url_for('index') }}" class="logo">
+          <span class="logo__mark">В</span>
+          <span class="logo__text">{{ site.brand | upper }}<small>{{ site.creator }}</small></span>
+        </a>
+        <p>{{ footer_data.about }}</p>
+
+        <div class="socials">
+          {% for s in footer_data.socials %}
+            {% if s.cta %}
+              {% set q = cta_url(s.cta) %}
+              <a href="{{ q or '#' }}" aria-label="{{ s.label }}"
+                 {{ 'aria-disabled=true data-unset=' ~ s.cta if not q }}>{{ s.short }}</a>
+            {% else %}
+              {% set v = contact_value(s.contact) %}
+              <a href="{{ contact_href(s.contact) }}" aria-label="{{ s.label }}"
+                 class="{{ 'is-empty' if not v }}">{{ s.short }}</a>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <div class="footer__creator">
+          <span class="mono">Создатель курса</span>
+          <b>{{ site.creator }}</b>
+          <i>Автор и ведущий курса «{{ site.brand }}»</i>
+        </div>
+      </div>
+
+      {% for col in footer_data.columns %}
+        <div>
+          <h4>{{ col.title }}</h4>
+          {% if col.kind == 'contacts' %}
+            <ul class="footer__contact">
+              <li><b>Почта</b> <span>{{ contact_text('email') }}</span></li>
+              <li><b>Телефон</b> <span>{{ contact_text('phone') }}</span></li>
+              {% set q = cta_url('telegramChat') %}
+              <li><b>Telegram</b>
+                <a href="{{ q or '#' }}" {{ 'aria-disabled=true data-unset=telegramChat' if not q }}>Написать</a></li>
+              <li><b>Город</b> <span>{{ contact_text('address') }}</span></li>
+            </ul>
+            {% set q = cta_url('leadBottom') or cta_url('lead') %}
+            <a href="{{ q or '#' }}" class="btn btn--primary btn--sm mt-2 {{ 'is-empty' if not q }}"
+               {{ 'aria-disabled=true data-unset=lead' if not q }}>Записаться на курс</a>
+          {% else %}
+            <ul>
+              {% for link in col.links %}
+                {% if link.empty or not link.url %}
+                  <li><a href="#" class="is-empty" aria-disabled="true" data-unset="page">{{ link.label }}</a></li>
+                {% else %}
+                  <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="footer__bottom">
+      <span>© {{ now_year }} <b class="footer__by">{{ site.creator }}</b> · <span class="footer__brand">{{ site.brand }}</span></span>
+      <div class="footer__legal">
+        {% for link in footer_data.legal_links %}
+          <a href="{{ link.url }}">{{ link.label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</footer>

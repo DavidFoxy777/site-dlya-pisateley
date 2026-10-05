@@ -1,0 +1,165 @@
+{# ============================================================
+   МАКРОСЫ — повторяющиеся куски разметки.
+   Карточки описаны здесь один раз, а страницы собирают их
+   в любую сетку: .grid-2 / .grid-3 / .grid-4.
+   ============================================================ #}
+
+{# --- Кнопка. Пустая ссылка в content.json = пунктир + подсказка --- #}
+{% macro btn(label, key='', url='', style='primary', size='', cta_key='') %}
+  {%- if key -%}
+    {%- set q = cta_url(key) -%}
+    <a href="{{ q or url or '#' }}" class="btn btn--{{ style }} {{ 'btn--' ~ size if size }} {{ 'is-empty' if not q and not url }}"
+       {{ ('aria-disabled="true" data-unset="%s"' % cta_key or key) | safe if not q and not url }}>
+      {{ label }}{% if cta_key or key %} <span class="arr">→</span>{% endif %}
+    </a>
+  {%- else -%}
+    <a href="{{ url }}" class="btn btn--{{ style }} {{ 'btn--' ~ size if size }}">{{ label }}</a>
+  {%- endif -%}
+{% endmacro %}
+
+{# --- Кнопка-ссылка на контакт из content.json → contacts --- #}
+{% macro contact_btn(label, key, style='ghost', size='') %}
+  {%- set v = contact_value(key) -%}
+  <a href="{{ contact_href(key) }}" class="btn btn--{{ style }} {{ 'btn--' ~ size if size }} {{ 'is-empty' if not v }}"
+     {{ ('aria-disabled="true" data-unset="%s"' % key) | safe if not v }}>{{ label }}</a>
+{% endmacro %}
+
+{# --- Карточка «боль» (розовая) --- #}
+{% macro card_pain(item) %}
+<article class="card card--pain reveal">
+  {% if item.num %}<span class="card__n mono">{{ item.num }}</span>{% endif %}
+  <div class="card__icon"><span class="ni">{{ item.icon or '⚠' }}</span></div>
+  <h3 class="h-4">{{ item.title }}</h3>
+  <p>{{ item.text }}</p>
+</article>
+{% endmacro %}
+
+{# --- Карточка «навык» с чек-листом --- #}
+{% macro card_gain(item) %}
+<article class="card card--gain reveal">
+  <div class="card__icon"><span class="ni">{{ item.icon or '✦' }}</span></div>
+  <h3 class="h-4">{{ item.title }}</h3>
+  <p>{{ item.text }}</p>
+  {% if item.list %}
+    <ul class="card__list">
+      {% for li in item.list %}<li>{{ li }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+</article>
+{% endmacro %}
+
+{# --- Шаг процесса --- #}
+{% macro card_step(item) %}
+<article class="step reveal">
+  <div class="step__n mono">{{ item.num }}</div>
+  <h3 class="h-4">{{ item.title }}</h3>
+  <p>{{ item.text }}</p>
+</article>
+{% endmacro %}
+
+{# --- Отзыв --- #}
+{% macro card_quote(item) %}
+<article class="quote reveal">
+  <div class="quote__text">{{ item.text }}</div>
+  <div class="quote__author">
+    <span class="quote__ava">{{ item.initials or (item.name or '?')[:2] }}</span>
+    <div><b>{{ item.name }}</b><i>{{ item.role }}</i></div>
+  </div>
+</article>
+{% endmacro %}
+
+{# --- Работа ученика --- #}
+{% macro card_case(item) %}
+<article class="case reveal" data-cat-value="{{ item.cat }}">
+  <div class="case__cover" style="background:{{ item.cover_gradient }}">
+    <span>{{ item.cover_label }}</span>
+  </div>
+  <div class="case__body">
+    <div class="case__tag">{{ item.cat_label }}</div>
+    <h3 class="h-4">{{ item.title }}</h3>
+    <div class="case__result"><span>{{ item.result }}</span><b>{{ item.result_value }}</b></div>
+    <p>{{ item.text }}</p>
+    {{ btn(item.cta or 'Смотреть', key=item.cta_key, style='ghost', size='sm') }}
+  </div>
+</article>
+{% endmacro %}
+
+{# --- Модуль программы --- #}
+{% macro card_module(m) %}
+<article class="mod reveal">
+  <div class="mod__n">{{ m.num }}</div>
+  <div>
+    <h3 class="h-3">{{ m.title }}</h3>
+    <p>{{ m.lead }}</p>
+    {% if m.lessons %}
+      <ul class="mod__lessons">
+        {% for l in m.lessons %}
+          <li>
+            <span class="mod__l-num">Урок {{ l.num }}</span>
+            <span class="mod__l-title">{{ l.title }}</span>
+            {% if l.duration %}<span class="mod__l-dur">{{ l.duration }}</span>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% if m.result %}<div class="mod__tool">{{ m.result }}</div>{% endif %}
+  </div>
+</article>
+{% endmacro %}
+
+{# --- Карточка тарифа --- #}
+{% macro card_tariff(t) %}
+<article class="price {{ 'price--hot' if t.hot }} reveal">
+  {% if t.flag %}<div class="price__flag">{{ t.flag }}</div>{% endif %}
+  <div class="price__name">{{ t.num }}</div>
+  <h3>{{ t.name }}</h3>
+  <div class="price__desc">{{ t.description }}</div>
+  <div class="price__value"><b>{{ t.price | money }}</b>{% if t.old_price %} <s>{{ t.old_price | money }}</s>{% endif %}</div>
+  <div class="price__note">{{ t.unit }}</div>
+  {{ btn(t.cta, key=t.cta_key, style='primary' if t.hot else (t.btn_style or 'dark'), size='block') }}
+  <ul>
+    {% for f in t.features %}<li>{{ f | safe }}</li>{% endfor %}
+  </ul>
+</article>
+{% endmacro %}
+
+{# --- Карточка нейросети (витрина) --- #}
+{% macro card_service(s) %}
+<article class="svc" data-cat-value="{{ s.cat }}">
+  <div class="svc__mascot">
+    <img src="{{ url_for('static', filename='img/svc/' ~ s.file) }}" alt="{{ s.name }}" loading="lazy"
+         onerror="this.closest('.svc').classList.add('noimg');this.remove();">
+    <div class="svc__cat">{{ cat_label(s.cat) }}</div>
+    <div class="svc__tier" title="Ценовой уровень">
+      {% for i in range(4) %}<i class="{{ 'on' if i < s.tier }}"></i>{% endfor %}
+    </div>
+  </div>
+  <div class="svc__body">
+    <h3 class="svc__name">{{ s.name }}</h3>
+    <div class="svc__price"><b>{{ s.price }}</b><span>{{ s.unit }}</span></div>
+    <p class="svc__best">{{ s.best }}</p>
+    <div class="svc__tags">
+      {% if s.free %}<span class="yes">есть бесплатно</span>{% endif %}
+      {% if s.api %}<span>есть API</span>{% endif %}
+      <span>{{ cat_label(s.cat) }}</span>
+    </div>
+  </div>
+</article>
+{% endmacro %}
+
+{# --- Заголовок секции с нумерацией --- #}
+{% macro head(kicker, title, lead='', center=False) %}
+<div class="section-head reveal {{ 'section-head--center' if center }}" data-reveal="up">
+  {% if kicker %}<span class="mono">{{ kicker }}</span>{% endif %}
+  <h2 class="h-1 mt-2">{{ title | safe }}</h2>
+  {% if lead %}<p class="lead">{{ lead }}</p>{% endif %}
+</div>
+{% endmacro %}
+
+{# --- Врезка «пока не заполнено» --- #}
+{% macro notice(title, text) %}
+<div class="notice mt-3">
+  <span class="ni">⚑</span>
+  <div><b>{{ title }}</b> {{ text | safe }}</div>
+</div>
+{% endmacro %}
