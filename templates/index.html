@@ -142,43 +142,34 @@
   </div>
 </section>
 
-{# ================= 07. ПРОГРАММА (4 блока) ================= #}
+{# ================={# ================= 07. ПРОГРАММА (4 блока) ================= #}
 {% set pr = data.program %}
 <section class="section" id="modules">
   <div class="container">
     {{ m.head('04 — программа', 'Что вы пройдёте<br>за 8 недель', 'Четыре блока, двенадцать модулей, ноль теории без практики.') }}
 
     <div class="tabs reveal" data-tabs="prog">
-      {% for b in pr.blocks %}
-        <button class="tab {{ 'is-active' if loop.first }}" data-tab="{{ b.id }}">{{ b.num }} · {{ b.title }}</button>
-      {% endfor %}
+      {% for b in pr.blocks %}<button class="tab {{ 'is-active' if loop.first }}" data-tab="{{ b.id }}">{{ b.num }} · {{ b.title }}</button>{% endfor %}
     </div>
 
     {% for b in pr.blocks %}
-      <div class="panel {{ 'is-active' if loop.first }}" data-panel="{{ b.id }}" data-reveal="zoom">
-        {% for mod in b.modules %}{{ m.card_module(mod) }}{% endfor %}
-        {% if b.bonuses %}
-          <h2 class="h-2 mb-3 mt-4 reveal">Бонусы блока «{{ b.title }}»</h2>
-          <div class="grid grid-3">
-            {% for bn in b.bonuses %}
-              <article class="card card--gain reveal">
-                <div class="card__icon">✦</div>
-                <h3 class="h-4">{{ bn.title }}</h3>
-                <p>{{ bn.description }}</p>
-              </article>
-            {% endfor %}
-          </div>
-        {% endif %}
+    <div class="panel {{ 'is-active' if loop.first }}" data-panel="{{ b.id }}" data-reveal="zoom">
+      {% for mod in b.modules %}{{ m.card_module(mod) }}{% endfor %}
+      
+      {% if b.bonuses %}
+      <h2 class="h-2 mb-3 mt-4 reveal">Бонусы блока «{{ b.title }}»</h2>
+      <div class="grid grid-3">
+        {% for bn in b.bonuses %}<article class="card card--gain reveal"><div class="card__icon">✦</div><h3 class="h-4">{{ bn.title }}</h3><p>{{ bn.description }}</p></article>{% endfor %}
       </div>
+      {% endif %}
+    </div>
     {% endfor %}
 
     <div class="mt-3 flex">
       <a href="{{ url_for('program') }}" class="btn btn--ghost">Вся программа по урокам <span class="arr">→</span></a>
     </div>
   </div>
-</section>
-
-{# ================= 08. РАБОТЫ УЧЕНИКОВ ================= #}
+</section>{# ================= 08. РАБОТЫ УЧЕНИКОВ ================= #}
 {% set cs = data.home.cases %}
 <section class="section section--alt">
   <div class="container">
