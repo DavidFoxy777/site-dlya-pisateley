@@ -155,7 +155,7 @@
     {% for b in pr.blocks %}
     <div class="panel {{ 'is-active' if loop.first }}" data-panel="{{ b.id }}" data-reveal="zoom">
       {% for mod in b.modules %}{{ m.card_module(mod) }}{% endfor %}
-      
+
       {% if b.bonuses %}
       <h2 class="h-2 mb-3 mt-4 reveal">Бонусы блока «{{ b.title }}»</h2>
       <div class="grid grid-3">
